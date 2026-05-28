@@ -26,13 +26,30 @@ struct MatchMarkers: View {
 
     var body: some View {
         VStack {
-            HStack {
-                marker(for: matches[0])
-                marker(for: matches[1])
-            }
-            HStack {
-                marker(for: matches[2])
-                marker(for: matches[3])
+            if matches.count <= 4 {
+                HStack {
+                    marker(for: matches[0])
+                    marker(for: matches[1])
+                }
+                HStack {
+                    marker(for: matches[2])
+                    if matches.count > 3 {
+                        marker(for: matches[3])
+                    }
+                }
+            } else {
+                HStack {
+                    marker(for: matches[0])
+                    marker(for: matches[1])
+                    marker(for: matches[2])
+                }
+                HStack {
+                    marker(for: matches[3])
+                    marker(for: matches[4])
+                    if matches.count > 5 {
+                        marker(for: matches[5])
+                    }
+                }
             }
         }
         .aspectRatio(1, contentMode: .fit)
@@ -64,5 +81,12 @@ struct Peg: View {
 }
 
 #Preview {
-    ContentView()
+    VStack(spacing: 20) {
+        MatchMarkers(matches: [.exact, .inexact, .nomatch])
+        MatchMarkers(matches: [.exact, .inexact, .nomatch, .exact])
+        MatchMarkers(matches: [.exact, .inexact, .nomatch, .exact, .inexact])
+        MatchMarkers(matches: [.exact, .inexact, .nomatch, .exact, .inexact, .nomatch])
+    }
+    .frame(width: 120)
+    .padding()
 }
