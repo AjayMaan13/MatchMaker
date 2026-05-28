@@ -80,13 +80,42 @@ struct Peg: View {
     }
 }
 
-#Preview {
-    VStack(spacing: 20) {
-        MatchMarkers(matches: [.exact, .inexact, .nomatch])
-        MatchMarkers(matches: [.exact, .inexact, .nomatch, .exact])
-        MatchMarkers(matches: [.exact, .inexact, .nomatch, .exact, .inexact])
-        MatchMarkers(matches: [.exact, .inexact, .nomatch, .exact, .inexact, .nomatch])
+struct MatchMarkersPreview: View {
+    let matches: Array<Match>
+
+    private let pegColors: [Color] = [.red, .green, .blue, .yellow, .orange, .purple]
+
+    var body: some View {
+        HStack(spacing: 12) {
+            HStack {
+                ForEach(0..<matches.count, id: \.self) { index in
+                    Peg(color: pegColors[index])
+                        .frame(width: 40, height: 40)
+                }
+            }
+            MatchMarkers(matches: matches)
+                .frame(width: 80, height: 80)
+        }
+        .padding(.horizontal)
     }
-    .frame(width: 120)
-    .padding()
+}
+
+#Preview("Light Mode") {
+    VStack(spacing: 16) {
+        MatchMarkersPreview(matches: [.exact, .inexact, .nomatch])
+        MatchMarkersPreview(matches: [.exact, .inexact, .nomatch, .exact])
+        MatchMarkersPreview(matches: [.exact, .exact, .inexact, .nomatch, .exact])
+        MatchMarkersPreview(matches: [.exact, .inexact, .nomatch, .exact, .inexact, .nomatch])
+    }
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    VStack(spacing: 16) {
+        MatchMarkersPreview(matches: [.nomatch, .inexact, .exact])
+        MatchMarkersPreview(matches: [.inexact, .inexact, .inexact, .inexact])
+        MatchMarkersPreview(matches: [.exact, .exact, .exact, .exact, .exact])
+        MatchMarkersPreview(matches: [.exact, .inexact, .nomatch, .nomatch, .inexact, .exact])
+    }
+    .preferredColorScheme(.dark)
 }
