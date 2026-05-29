@@ -7,26 +7,40 @@
 
 import SwiftUI
 
-struct ContentView: View {
+// MARK: - Data Model
+
+/// Feedback for a single peg in a CodeBreaker guess.
+enum Match {
+    case exact      // right color, right position
+    case inexact    // right color, wrong position
+    case nomatch    // color not in the secret code
+}
+
+// MARK: - Atomic Views
+
+/// A single colored peg the player places on the board.
+struct Peg: View {
+    let color: Color
+
     var body: some View {
-        MatchMarkers(matches: [.exact, .inexact, .nomatch, .exact])
-            .frame(width: 120, height: 120)
-            .padding()
+        Circle()
+            .fill(color)
     }
 }
 
-enum Match {
-    case exact
-    case inexact
-    case nomatch
-}
+// MARK: - Composite View
 
+/// Renders the feedback grid for a guess.
+/// Accepts 3–6 `Match` values and adapts the layout:
+///   3 or 4 matches → 2×2 grid
+///   5 or 6 matches → 2×3 grid
 struct MatchMarkers: View {
     let matches: Array<Match>
 
     var body: some View {
         VStack {
             if matches.count <= 4 {
+                // 2×2 layout
                 HStack {
                     marker(for: matches[0])
                     marker(for: matches[1])
@@ -38,6 +52,7 @@ struct MatchMarkers: View {
                     }
                 }
             } else {
+                // 2×3 layout
                 HStack {
                     marker(for: matches[0])
                     marker(for: matches[1])
@@ -52,9 +67,12 @@ struct MatchMarkers: View {
                 }
             }
         }
+        // Keep the whole grid square regardless of how many markers it holds.
         .aspectRatio(1, contentMode: .fit)
     }
 
+    /// Maps a single `Match` value to its visual representation.
+    /// `.nomatch` renders as a clear circle so it still occupies a grid slot.
     @ViewBuilder
     func marker(for match: Match) -> some View {
         switch match {
@@ -71,15 +89,23 @@ struct MatchMarkers: View {
     }
 }
 
-struct Peg: View {
-    let color: Color
+// MARK: - App Entry View
 
+struct ContentView: View {
     var body: some View {
-        Circle()
-            .fill(color)
+        MatchMarkers(matches: [.exact, .inexact, .nomatch, .exact])
+            .frame(width: 120, height: 120)
+            .padding()
     }
 }
 
+// MARK: - Preview Helpers
+
+/// "Helicopter" view used only by `#Preview`.
+/// Pairs a row of dummy `Peg`s with the `MatchMarkers` they correspond to,
+/// so the markers can be seen in their native environment.
+/// Both the pegs and the markers are driven by the same `matches` array,
+/// guaranteeing the peg count always equals the marker count.
 struct MatchMarkersPreview: View {
     let matches: Array<Match>
 
@@ -99,6 +125,8 @@ struct MatchMarkersPreview: View {
         .padding(.horizontal)
     }
 }
+
+// MARK: - Previews
 
 #Preview("Light Mode") {
     VStack(spacing: 16) {
